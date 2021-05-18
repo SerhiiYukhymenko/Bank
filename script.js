@@ -2,7 +2,7 @@
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// BANKIST APP
+// BANK APP
 
 // Data
 const account1 = {
@@ -61,6 +61,8 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+// Display movements
+
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
   movements.forEach(function (mov, i) {
@@ -111,9 +113,21 @@ const createUserNames = function (accounts) {
         .join(''))
   );
 };
+createUserNames(accounts);
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
+/// Event handler
+let currentAccount
+btnLogin.addEventListener("click",(e)=>{
+  e.preventDefault();
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
+  if(currentAccount?.pin === +inputLoginPin.value) {
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}!`;
+    containerApp.style.opacity = 1;
+  }
+});
+
+
+
 // LECTURES
 
 const currencies = new Map([
