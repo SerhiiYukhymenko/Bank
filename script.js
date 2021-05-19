@@ -74,35 +74,34 @@ const displayMovements = function (movements) {
     } ${type}</div>
       <div class="movements__value">${mov} €</div>
     </div>`;
-
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 const calcDisplayBalance = movements => {
   const balance = movements.reduce((acc, cur) => acc + cur);
   labelBalance.textContent = `${balance} €`;
 };
-calcDisplayBalance(account1.movements);
 
-const calcDisplaySummary = movements => {
-  const income = movements
+const calcDisplaySummary = acc => {
+  const income = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, cur) => acc + cur);
   labelSumIn.textContent = income + ' €';
-  const withdrawal = movements
-    .filter(mov => mov < 0)
-    .reduce((acc, cur) => acc + cur);
+  let withdrawal
+  if (acc.movements.some(mov => mov<0)){
+     withdrawal = acc.movements
+      .filter(mov => mov < 0)
+      .reduce((acc, cur) => acc + cur);
+  } else { withdrawal = 0}
   labelSumOut.textContent = -withdrawal + ' €';
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(mov => (mov * 1.2) / 100)
+    .map(mov => (mov * acc.interestRate) / 100)
     .filter(mov => mov >= 1)
     .reduce((acc, cur) => acc + cur);
   labelSumInterest.textContent = interest + ' €';
 };
-calcDisplaySummary(account1.movements);
 
 const createUserNames = function (accounts) {
   accounts.forEach(
@@ -116,17 +115,25 @@ const createUserNames = function (accounts) {
 createUserNames(accounts);
 
 /// Event handler
-let currentAccount
-btnLogin.addEventListener("click",(e)=>{
+let currentAccount;
+btnLogin.addEventListener('click', e => {
   e.preventDefault();
-  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
-  if(currentAccount?.pin === +inputLoginPin.value) {
-    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(" ")[0]}!`;
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value.trim()
+  );
+  if (currentAccount?.pin === +inputLoginPin.value) {
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }!`;
     containerApp.style.opacity = 1;
+    displayMovements(currentAccount.movements);
+    calcDisplayBalance(currentAccount.movements);
+    calcDisplaySummary(currentAccount);
+    inputLoginPin.value = inputLoginUsername.value = "";
+    inputLoginPin.blur()
+    inputCloseUsername.blur()
   }
 });
-
-
 
 // LECTURES
 
