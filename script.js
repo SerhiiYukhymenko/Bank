@@ -160,6 +160,36 @@ btnTransfer.addEventListener('click', e => {
   inputTransferTo.blur();
 });
 
+//Close account
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    +inputClosePin.value === currentAccount.pin
+  ) {
+    accounts.splice(
+      accounts.findIndex(acc => acc.username === currentAccount.username),
+      1
+    );
+    inputCloseUsername.value = inputClosePin.value = '';
+    inputCloseUsername.blur();
+    inputClosePin.blur();
+    containerApp.style.opacity = 0;
+  }
+});
+
+//Loan
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  const loan = +inputLoanAmount.value;
+  if (loan > 0 && currentAccount.movements.some(mov => mov >= loan * 0.1)) {
+    currentAccount.movements.push(loan);
+    display(currentAccount);
+    inputLoanAmount.value = null;
+    inputLoanAmount.blur()
+  }
+});
+
 // LECTURES
 
 const currencies = new Map([
