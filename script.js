@@ -58,9 +58,10 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 // Display movements
-const displayMovements = function (movements) {
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+  const moves = sort ? [...acc.movements].sort((a, b) => a - b) : acc.movements;
+  moves.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
@@ -103,7 +104,7 @@ const calcDisplaySummary = acc => {
 };
 
 const display = acc => {
-  displayMovements(acc.movements);
+  displayMovements(acc);
   calcDisplayBalance(acc);
   calcDisplaySummary(acc);
 };
@@ -186,10 +187,17 @@ btnLoan.addEventListener('click', e => {
     currentAccount.movements.push(loan);
     display(currentAccount);
     inputLoanAmount.value = null;
-    inputLoanAmount.blur()
+    inputLoanAmount.blur();
   }
 });
 
+//Sort
+let isSorted;
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  isSorted = isSorted ? 0 : 1;
+  displayMovements(currentAccount, isSorted);
+});
 // LECTURES
 
 const currencies = new Map([
