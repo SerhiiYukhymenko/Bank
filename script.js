@@ -198,7 +198,50 @@ btnSort.addEventListener('click', e => {
   isSorted = isSorted ? 0 : 1;
   displayMovements(currentAccount, isSorted);
 });
+
+
 // LECTURES
+// ex 1
+const sum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 0)
+  .reduce((a, b) => a + b);
+console.log(sum);
+//ex 2
+const oneThousand = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((a, b) => (b >= 1000 ? ++a : a), 0);
+console.log(oneThousand);
+//ex 3
+const { deposit, withdrawal } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (acc, cur) => {
+      acc[cur > 0 ? 'deposit' : 'withdrawal'] += cur;
+      return acc;
+    },
+    {
+      deposit: 0,
+      withdrawal: 0,
+    }
+  );
+console.log(deposit, withdrawal);
+// ex 4
+const convertTitle = title => {
+  const capitalize = str => str[0].toUpperCase()+str.slice(1);
+  const exceptions = ['a', 'an', 'and', 'the', 'but', 'or', 'on', 'in', 'with'];
+  return capitalize(
+    title
+      .toLowerCase()
+      .split(' ')
+      .map(str => (exceptions.includes(str) ? str : capitalize(str)))
+      .join(' ')
+  );
+};
+console.log(convertTitle('aNd this iS A TiTlE'));
+
+
+
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
