@@ -44,7 +44,6 @@ const account2 = {
 
 const accounts = [account1, account2];
 
-
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -76,12 +75,18 @@ const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
   const moves = sort ? [...acc.movements].sort((a, b) => a - b) : acc.movements;
   moves.forEach(function (mov, i) {
+    const date = new Date(acc.movementsDates[i]);
+    const day = `${date.getUTCDate()}`.padStart(2, 0);
+    const month = `${date.getUTCMonth() + 1}`.padStart(2, 0);
+    const year = date.getUTCFullYear();
+
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
+      <div class="movements__date">${day}/${month}/${year}</div>
       <div class="movements__value">${mov.toFixed(2)} €</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -122,6 +127,7 @@ const display = acc => {
   calcDisplayBalance(acc);
   calcDisplaySummary(acc);
 };
+
 //User names
 const createUserNames = function (accounts) {
   accounts.forEach(
@@ -135,7 +141,14 @@ const createUserNames = function (accounts) {
 createUserNames(accounts);
 
 /// Login
+
+//login imitation
 let currentAccount;
+// currentAccount = account1;
+// display(currentAccount);
+// containerApp.style.opacity = 1;
+// //
+
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
   currentAccount = accounts.find(
@@ -150,6 +163,14 @@ btnLogin.addEventListener('click', e => {
     inputLoginPin.value = inputLoginUsername.value = '';
     inputLoginPin.blur();
     inputCloseUsername.blur();
+    //Date 
+    const date = new Date();
+    const day = `${date.getDay()}`.padStart(2, 0);
+    const month = `${date.getMonth() + 1}`.padStart(2, 0);
+    const year = date.getFullYear();
+    const hour = `${date.getHours()}`.padStart(2, 0);
+    const minutes = `${date.getMinutes()}`.padStart(2, 0);
+    labelDate.textContent = `${day}/${month}/${year} - ${hour}:${minutes}`;
   }
 });
 
@@ -167,7 +188,9 @@ btnTransfer.addEventListener('click', e => {
     currentAccount !== transferTo
   ) {
     currentAccount.movements.push(-amount);
+    currentAccount.movementsDates.push(new Date().toISOString())
     transferTo.movements.push(amount);
+    transferTo.movementsDates.push(new Date().toISOString())
     display(currentAccount);
   }
   inputTransferAmount.value = inputTransferTo.value = '';
@@ -199,6 +222,7 @@ btnLoan.addEventListener('click', e => {
   const loan = +inputLoanAmount.value;
   if (loan > 0 && currentAccount.movements.some(mov => mov >= loan * 0.1)) {
     currentAccount.movements.push(loan);
+    currentAccount.movementsDates.push(new Date().toISOString())
     display(currentAccount);
     inputLoanAmount.value = null;
     inputLoanAmount.blur();
@@ -253,9 +277,6 @@ btnSort.addEventListener('click', e => {
 //   );
 // };
 // console.log(convertTitle('aNd this iS A TiTlE'));
-
-
-
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
