@@ -16,7 +16,7 @@ const account1 = {
     '2020-05-08T14:11:59.604Z',
     '2020-05-27T17:01:17.194Z',
     '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2021-05-24T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -70,23 +70,33 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+//Movements Dates
+const formattedDate = passedDate => {
+  const calcDaysPast = (date1, date2) =>
+    Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
+  const daysPast = calcDaysPast(new Date(), new Date(passedDate));
+  const date = new Date(passedDate);
+  const day = `${date.getUTCDate()}`.padStart(2, 0);
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, 0);
+  const year = date.getUTCFullYear();
+  if (daysPast === 0)return "Today";
+  if(daysPast===1)return "Yesterday";
+  if(daysPast<7)return `${daysPast} days ago`;
+  return `${day}/${month}/${year}`;
+};
+
 // Display movements
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
   const moves = sort ? [...acc.movements].sort((a, b) => a - b) : acc.movements;
   moves.forEach(function (mov, i) {
-    const date = new Date(acc.movementsDates[i]);
-    const day = `${date.getUTCDate()}`.padStart(2, 0);
-    const month = `${date.getUTCMonth() + 1}`.padStart(2, 0);
-    const year = date.getUTCFullYear();
-
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-      <div class="movements__date">${day}/${month}/${year}</div>
+      <div class="movements__date">${formattedDate(acc.movementsDates[i])}</div>
       <div class="movements__value">${mov.toFixed(2)} €</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -122,6 +132,7 @@ const calcDisplaySummary = acc => {
   labelSumInterest.textContent = interest.toFixed(2) + ' €';
 };
 
+//Display all
 const display = acc => {
   displayMovements(acc);
   calcDisplayBalance(acc);
@@ -141,14 +152,12 @@ const createUserNames = function (accounts) {
 createUserNames(accounts);
 
 /// Login
-
-//login imitation
 let currentAccount;
-// currentAccount = account1;
-// display(currentAccount);
-// containerApp.style.opacity = 1;
+//login imitation
+currentAccount = account1;
+display(currentAccount);
+containerApp.style.opacity = 1;
 // //
-
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
   currentAccount = accounts.find(
@@ -163,7 +172,7 @@ btnLogin.addEventListener('click', e => {
     inputLoginPin.value = inputLoginUsername.value = '';
     inputLoginPin.blur();
     inputCloseUsername.blur();
-    //Date 
+    //Date
     const date = new Date();
     const day = `${date.getDay()}`.padStart(2, 0);
     const month = `${date.getMonth() + 1}`.padStart(2, 0);
@@ -188,9 +197,9 @@ btnTransfer.addEventListener('click', e => {
     currentAccount !== transferTo
   ) {
     currentAccount.movements.push(-amount);
-    currentAccount.movementsDates.push(new Date().toISOString())
+    currentAccount.movementsDates.push(new Date().toISOString());
     transferTo.movements.push(amount);
-    transferTo.movementsDates.push(new Date().toISOString())
+    transferTo.movementsDates.push(new Date().toISOString());
     display(currentAccount);
   }
   inputTransferAmount.value = inputTransferTo.value = '';
@@ -222,7 +231,7 @@ btnLoan.addEventListener('click', e => {
   const loan = +inputLoanAmount.value;
   if (loan > 0 && currentAccount.movements.some(mov => mov >= loan * 0.1)) {
     currentAccount.movements.push(loan);
-    currentAccount.movementsDates.push(new Date().toISOString())
+    currentAccount.movementsDates.push(new Date().toISOString());
     display(currentAccount);
     inputLoanAmount.value = null;
     inputLoanAmount.blur();
@@ -237,6 +246,8 @@ btnSort.addEventListener('click', e => {
   displayMovements(currentAccount, isSorted);
 });
 
+const daysPast = (date1, date2) =>
+  Math.abs((date1 - date2) / (1000 * 60 * 60 * 24));
 
 // LECTURES
 // ex 1
