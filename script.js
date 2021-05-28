@@ -71,18 +71,14 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 //Movements Dates
-const formattedDate = passedDate => {
+const formattedDate = function(date,locale) {
   const calcDaysPast = (date1, date2) =>
     Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
-  const daysPast = calcDaysPast(new Date(), new Date(passedDate));
-  const date = new Date(passedDate);
-  const day = `${date.getUTCDate()}`.padStart(2, 0);
-  const month = `${date.getUTCMonth() + 1}`.padStart(2, 0);
-  const year = date.getUTCFullYear();
+  const daysPast = calcDaysPast(new Date(),date);
   if (daysPast === 0)return "Today";
   if(daysPast===1)return "Yesterday";
   if(daysPast<7)return `${daysPast} days ago`;
-  return `${day}/${month}/${year}`;
+  return new Intl.DateTimeFormat(locale).format(date);
 };
 
 // Display movements
@@ -96,7 +92,7 @@ const displayMovements = function (acc, sort = false) {
       <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-      <div class="movements__date">${formattedDate(acc.movementsDates[i])}</div>
+      <div class="movements__date">${formattedDate(new Date(acc.movementsDates[i]),acc.locale)}</div>
       <div class="movements__value">${mov.toFixed(2)} €</div>
     </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -158,6 +154,10 @@ currentAccount = account1;
 display(currentAccount);
 containerApp.style.opacity = 1;
 // //
+
+//APi Date
+
+
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
   currentAccount = accounts.find(
@@ -174,12 +174,14 @@ btnLogin.addEventListener('click', e => {
     inputCloseUsername.blur();
     //Date
     const date = new Date();
-    const day = `${date.getDay()}`.padStart(2, 0);
-    const month = `${date.getMonth() + 1}`.padStart(2, 0);
-    const year = date.getFullYear();
-    const hour = `${date.getHours()}`.padStart(2, 0);
-    const minutes = `${date.getMinutes()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year} - ${hour}:${minutes}`;
+    const options = {
+      hour: "numeric",
+      minute: "numeric",
+      day: "numeric",
+      month:"numeric",
+      year: "numeric",
+    }
+    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale,options).format(date)
   }
 });
 
