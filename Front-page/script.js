@@ -13,6 +13,9 @@ const tabsContent = document.querySelectorAll('.operations__content');
 
 const nav = document.querySelector('.nav');
 const section1 = document.querySelector('#section--1');
+const sections = document.querySelectorAll('.section');
+
+const lazyImages = document.querySelectorAll('.features__img');
 
 // Modal window
 const openModal = function (e) {
@@ -118,7 +121,6 @@ nav.addEventListener('mouseout', fade.bind(1));
 //     : nav.classList.remove('sticky');
 // });
 
-
 const header = document.querySelector('.header');
 const stickyNav = entries => {
   entries[0].isIntersecting
@@ -129,6 +131,44 @@ const stickyNav = entries => {
 const headerObserver = new IntersectionObserver(stickyNav, {
   root: null,
   threshold: 0,
-  rootMargin: `-${nav.getBoundingClientRect().height}px`
+  rootMargin: `-${nav.getBoundingClientRect().height}px`,
 });
 headerObserver.observe(header);
+
+//Sections reveal
+const sectionsReveal = (e, obs) => {
+  if (!e[0].isIntersecting) return;
+  e[0].target.classList.remove('section--hidden');
+  obs.unobserve(e[0].target);
+};
+
+const sectionsObserve = new IntersectionObserver(sectionsReveal, {
+  root: null,
+  threshold: 0.15,
+});
+
+sections.forEach(section => {
+  section.classList.add('section--hidden');
+  sectionsObserve.observe(section);
+});
+
+//Lazy loading img
+const observeImg = (e, obs) => {
+  if (!e[0].isIntersecting) return;
+  e[0].target.src = e[0].target.dataset.src;
+  e[0].target.addEventListener("load",()=>{
+    e[0].target.classList.remove('lazy-img');
+  })
+  obs.unobserve(e[0].target);
+};
+
+const imgObserver = new IntersectionObserver(observeImg, {
+  root: null,
+  threshold: 0.95
+});
+
+lazyImages.forEach(img => {
+  imgObserver.observe(img);
+});
+
+//Carousel 

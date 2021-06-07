@@ -1,4 +1,4 @@
-/* The page is NOT responsive. You can implement responsiveness yourself if you wanna have some fun 😃 */
+/* NOT responsive */
 
 :root {
   --color-primary: #5ec576;
@@ -100,7 +100,7 @@ p {
   color: #666;
 }
 
-/* This is BAD for accessibility! Don't do in the real world! */
+/* This is BAD for accessibility! */
 button:focus {
   outline: none;
 }
@@ -124,7 +124,7 @@ img {
   z-index: 100;
 }
 
-/* nav and stickly class at the same time */
+/* nav and stickly */
 .nav.sticky {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.95);
@@ -392,8 +392,6 @@ h4 {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* THIS creates the animation! */
   transition: transform 1s;
 }
 
